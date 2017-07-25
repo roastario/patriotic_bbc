@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+
+  "name": "The (Un) Patriotic BBC",
+  "description": "This extension shows a Google Image search result for the current page",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "activeTab","https://api-project-1047670303083.appspot.com/"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["http://www.bbc.co.uk/news/*", "https://www.bbc.co.uk/news/*"],
+      "js": ["patrioticify.js"]
+    }
+  ]
+}

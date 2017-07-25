@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+<head>
+    <title>Loony Liam's Patriotic BBC</title>
+    <style>
+        body {
+            font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+            font-size: 100%;
+        }
+
+        #status {
+            /* avoid an excessively wide status text */
+            white-space: pre;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 400px;
+        }
+
+        .patrioticButton {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+    </style>
+    <script src="popup.js"></script>
+</head>
+<body>
+<div id="control">
+    <button class="patrioticButton"> Patrioticify!</button>
+</div>
+</body>
+</html>
+
