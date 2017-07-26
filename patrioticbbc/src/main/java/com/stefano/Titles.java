@@ -26,9 +26,11 @@ public class Titles extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         TitleEdit edit = JsonHelper.fromRequest(req, TitleEdit.class);
-        edit.setUUID(new BigInteger(128, new Random()).toString(36));
-        datastore.put(edit.asEntity());
-        response.setStatus(200);
+        if (!edit.getNewTitle().contains("<") && !edit.getNewTitle().contains(">")) {
+            edit.setUUID(new BigInteger(128, new Random()).toString(36));
+            datastore.put(edit.asEntity());
+            response.setStatus(200);
+        }
     }
 
     @Override
@@ -37,10 +39,12 @@ public class Titles extends HttpServlet {
         Query titleQuery = new Query(TitleEdit.dataStoreType())
                 .setFilter(new Query.FilterPredicate("titleId", Query.FilterOperator.EQUAL, titleId));
         PreparedQuery pq = datastore.prepare(titleQuery);
-        Entity result = pq.asIterable().iterator().next();
-        new Gson().toJson(TitleEdit.fromEntity(result), TitleEdit.class, resp.getWriter());
-        resp.flushBuffer();
-        resp.setStatus(200);
+        if (pq.asIterator().hasNext()) {
+            Entity result = pq.asIterable().iterator().next();
+            new Gson().toJson(TitleEdit.fromEntity(result), TitleEdit.class, resp.getWriter());
+            resp.flushBuffer();
+            resp.setStatus(200);
+        }
     }
 
     public static String getString() {
