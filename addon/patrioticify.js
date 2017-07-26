@@ -2,16 +2,35 @@
  * Created by stefanofranz on 25/07/17.
  */
 
+let server = "https://api-project-1047670303083.appspot.com/";
+
 
 if (document.title.indexOf("BBC News") !== -1) {
-    var titleElement = document.querySelector('div.story-body > h1');
+    let titleElement = document.querySelector('div.story-body > h1');
+    let isPatriotic = true;
+
+    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+        if (!(isPatriotic = !isPatriotic)) {
+            if (titleElement.oldTitle) {
+                titleElement.innerHTML = titleElement.oldTitle;
+            }
+        } else {
+            if (titleElement.newTitle) {
+                titleElement.innerHTML = titleElement.newTitle;
+            }
+        }
+        sendResponse({isPatriotic: isPatriotic});
+    });
+
 
     //get a new title if available
-    fetch('https://api-project-1047670303083.appspot.com/title?titleId=' + encodeURIComponent(window.location.pathname))
+    fetch(server + 'title?titleId=' + encodeURIComponent(window.location.pathname))
         .then(function (response) {
             return response.json();
         }).then(function (parsedJSON) {
-        titleElement.innerHTML = parsedJSON.newTitle;
+        titleElement.oldTitle = titleElement.innerHTML;
+        titleElement.newTitle = parsedJSON.newTitle;
+        titleElement.innerHTML = titleElement.newTitle;
     });
 
     //setup editing
@@ -20,14 +39,13 @@ if (document.title.indexOf("BBC News") !== -1) {
         if (event.key === 'Enter') {
             event.stopPropagation();
             titleElement.contentEditable = 'false';
-            fetch('https://api-project-1047670303083.appspot.com/title', {
+            fetch(server + 'title', {
                 'method': 'put',
                 'body': JSON.stringify({
                     'titleId': window.location.pathname,
-                    'newTitle': titleElement.innerHTML
+                    'newTitle': titleElement.textContent
                 })
             }).then(function (response) {
-                console.log(response.json);
                 window.setTimeout(function () {
                     titleElement.contentEditable = 'true'
                 }, 100);
