@@ -4,6 +4,21 @@
 
 let server = "https://api-project-1047670303083.appspot.com/";
 
+function sendUpdatedTitle(titleElement) {
+    titleElement.contentEditable = 'false';
+    fetch(server + 'title', {
+        'method': 'put',
+        'body': JSON.stringify({
+            'titleId': window.location.pathname,
+            'newTitle': titleElement.textContent
+        })
+    }).then(function (response) {
+        window.setTimeout(function () {
+            titleElement.contentEditable = 'true'
+        }, 100);
+    }).catch(function (error) {
+    });
+}
 
 if (document.title.indexOf("BBC News") !== -1) {
     let titleElement = document.querySelector('div.story-body > h1');
@@ -34,24 +49,18 @@ if (document.title.indexOf("BBC News") !== -1) {
     });
 
     //setup editing
+
     titleElement.contentEditable = "true";
+
+    titleElement.addEventListener("blur", function (event) {
+        sendUpdatedTitle(event.target || event.srcElement);
+    });
+
     titleElement.addEventListener("keydown", function (event) {
         if (event.key === 'Enter') {
             event.stopPropagation();
-            titleElement.contentEditable = 'false';
-            fetch(server + 'title', {
-                'method': 'put',
-                'body': JSON.stringify({
-                    'titleId': window.location.pathname,
-                    'newTitle': titleElement.textContent
-                })
-            }).then(function (response) {
-                window.setTimeout(function () {
-                    titleElement.contentEditable = 'true'
-                }, 100);
-            }).catch(function (error) {
-            });
-
+            sendUpdatedTitle(event.target || event.srcElement);
         }
     });
 }
+
